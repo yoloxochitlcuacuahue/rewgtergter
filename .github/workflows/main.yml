@@ -1,0 +1,36 @@
+name: Build PromptManager EXE
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Generate Prisma Client
+      run: npx prisma generate
+
+    - name: Build app
+      run: |
+        npm run build
+        npm run make
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: prompt-manager-exe
+        path: out/make/**/*.exe
